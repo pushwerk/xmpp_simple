@@ -14,8 +14,6 @@ require 'xmpp_simple/node'
 require 'xmpp_simple/parser'
 
 module XMPPSimple
-  attr_writer :logger
-
   module_function
 
   def logger
@@ -37,5 +35,9 @@ module XMPPSimple
 
   def error(message)
     logger.error(message.inspect)
+  end
+
+  def logger(logger)
+    @logger = logger
   end
 end
