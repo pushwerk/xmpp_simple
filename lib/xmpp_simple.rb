@@ -37,7 +37,7 @@ module XMPPSimple
     logger.error(message.inspect)
   end
 
-  def logger(logger)
+  def logger=(logger)
     @logger = logger
   end
 end
