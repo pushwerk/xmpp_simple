@@ -3,7 +3,7 @@ module XMPPSimple
     NAME = 'auth'
 
     def self.create
-      super
+      super()
       @node.add_namespace(nil, 'urn:ietf:params:xml:ns:xmpp-sasl')
       @node['mechanism'] = self::MECHANISM
     end

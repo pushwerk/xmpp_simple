@@ -87,6 +87,8 @@ module XMPPSimple
       @handler.disconnected
     rescue => e
       XMPPSimple.debug "Error: #{e} => Reconnecting"
+      puts e.backtrace
+      exit
       @handler.reconnecting
       reconnect
     end
