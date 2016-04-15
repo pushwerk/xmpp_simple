@@ -3,5 +3,7 @@ AllCops:
     - 'vendor/**/*'
 LineLength:
   Max: 120
+MethodLength:
+  Max: 15
 Documentation:
   Enabled: false

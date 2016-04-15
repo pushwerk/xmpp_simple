@@ -1,6 +1,6 @@
 module XMPPSimple
   class PlainAuth < AuthMechanism
-    MECHANISM = 'PLAIN'
+    MECHANISM = 'PLAIN'.freeze
 
     def self.create(jid, password)
       super()

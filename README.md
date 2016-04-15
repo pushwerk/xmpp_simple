@@ -15,7 +15,7 @@ And then execute:
 ## Usage
 
 ```
-class XMPPConnection < XMPPSimple::Api
+class XMPPConnection
   def initialize
     @xmpp_client = XMPPSimple::Client.new(self,
                                           username,
@@ -48,7 +48,8 @@ end
 ```
 
 ## TODO
-* Tests!!!
+* Documentation?
+* Probably more tests
 
 ## Contributing
 

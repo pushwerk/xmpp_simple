@@ -1,6 +1,6 @@
 module XMPPSimple
   class Iq < BaseStanza
-    NAME = 'iq'
+    NAME = 'iq'.freeze
 
     def self.create
       super()
