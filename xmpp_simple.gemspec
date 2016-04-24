@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['l3akage']
   spec.email         = ['info@l3akage.de']
 
-  spec.homepage      = 'https://github.com/l3akage/xmpp_simple'
+  spec.homepage      = 'https://github.com/pushwerk/xmpp_simple'
   spec.summary       = 'Simple XMPP implementation'
   spec.description   = 'A simle xmpp implementation using celluloid'
   spec.license       = 'MIT'

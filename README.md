@@ -1,13 +1,13 @@
 # XmppSimple
 
 A simle xmpp implementation using celluloid
-intended to work with https://github.com/l3akage/ccs
+intended to work with https://github.com/pushwerk/ccs
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'xmpp_simple', git: 'https://github.com/l3akage/xmpp_simple.git'
+    gem 'xmpp_simple', git: 'https://github.com/pushwerk/xmpp_simple.git'
 
 And then execute:
 
@@ -52,7 +52,7 @@ end
 
 ## Contributing
 
-1. Fork it ( https://github.com/l3akage/xmpp_simple/fork )
+1. Fork it ( https://github.com/pushwerk/xmpp_simple/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
