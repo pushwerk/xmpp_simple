@@ -7,17 +7,23 @@ end
 RSpec.describe XMPPSimple::Client do
   before(:each) do
     Celluloid.logger = nil
+    @params = {
+      username: 'foo@bar.de',
+      password: 'password',
+      host: 'host',
+      port: 5223
+    }
   end
   describe '.new' do
     it 'requires username, password, host and port' do
-      handler = TestHandler.new
-      expect { XMPPSimple::Client.new(handler, nil, nil, nil) }
+      expect { XMPPSimple::Client.new(handler: TestHandler.new) }
         .to raise_exception('username, password, host and port must be set')
     end
 
     it 'sets necessary instance variables' do
       handler = TestHandler.new
-      client = XMPPSimple::Client.new(handler, 'foo@bar.de', 'password', 'host')
+      params = @params.merge(handler: handler)
+      client = XMPPSimple::Client.new(params)
       expect(client.instance_variable_get(:@password)).to match('password')
       expect(client.instance_variable_get(:@username).to_s).to match('foo@bar.de')
       expect(client.instance_variable_get(:@host)).to match('host')
@@ -25,15 +31,9 @@ RSpec.describe XMPPSimple::Client do
       expect(client.instance_variable_get(:@handler)).to eq(handler)
     end
 
-    it 'accepts different port' do
-      handler = TestHandler.new
-      client = XMPPSimple::Client.new(handler, 'foo@bar.de', 'password', 'host', 123)
-      expect(client.instance_variable_get(:@port)).to eq(123)
-    end
-
     it 'converts username to Jid' do
-      handler = TestHandler.new
-      client = XMPPSimple::Client.new(handler, 'foo@bar.de', 'password', 'host')
+      params = @params.merge(handler: TestHandler.new)
+      client = XMPPSimple::Client.new(params)
       expect(client.instance_variable_get(:@username).class).to match(XMPPSimple::Jid)
     end
   end
@@ -41,11 +41,15 @@ RSpec.describe XMPPSimple::Client do
   context do
     before(:each) do
       @handler = TestHandler.new
+      @params = {
+        username: 'test@example.com',
+        password: 'password',
+        host: 'example.com',
+        port: 5223,
+        handler: @handler
+      }
       @socket = TestSocket.new
-      @client = XMPPSimple::Client.new(@handler,
-                                       'test@example.com',
-                                       'password',
-                                       'example.com')
+      @client = XMPPSimple::Client.new(@params)
       @client.instance_variable_set(:@socket, @socket)
     end
 
@@ -200,10 +204,14 @@ RSpec.describe XMPPSimple::Client do
 
       it 'doesn\'t crash when handler doesn\'t implement method' do
         xml = XMPPSimple::Message.create
-        client = XMPPSimple::Client.new(Object.new,
-                                        'test@example.com',
-                                        'password',
-                                        'example.com')
+        params = {
+          username: 'test@example.com',
+          password: 'password',
+          host: 'example.com',
+          port: 5223,
+          handler: Object.new
+        }
+        client = XMPPSimple::Client.new(params)
         expect { client.message(xml) }.not_to raise_exception
       end
     end
@@ -224,10 +232,14 @@ RSpec.describe XMPPSimple::Client do
         allow(@node).to receive(:at)
           .with('/iq/bind:bind', 'bind' => 'urn:ietf:params:xml:ns:xmpp-bind')
           .and_return(true)
-        client = XMPPSimple::Client.new(Object.new,
-                                        'test@example.com',
-                                        'password',
-                                        'example.com')
+        params = {
+          username: 'test@example.com',
+          password: 'password',
+          host: 'example.com',
+          port: 5223,
+          handler: Object.new
+        }
+        client = XMPPSimple::Client.new(params)
         expect { client.iq(@node) }.not_to raise_exception
       end
 
@@ -246,19 +258,22 @@ RSpec.describe XMPPSimple::Client do
 
       it 'doesn\'t crash when handler doesn\'t implement method' do
         socket = TestSocket.new
-        client = XMPPSimple::Client.new(Object.new,
-                                        'test@example.com',
-                                        'password',
-                                        'example.com')
+        params = {
+          username: 'test@example.com',
+          password: 'password',
+          host: 'example.com',
+          port: 5223,
+          handler: Object.new
+        }
+        client = XMPPSimple::Client.new(params)
         client.instance_variable_set(:@socket, socket)
         allow(socket).to receive(:readpartial).with(4096).and_raise(EOFError)
         expect { client.run }.not_to raise_exception
       end
 
-      it 'reconnects on other exceptions' do
+      it 'disconnects on other exceptions' do
         allow(@socket).to receive(:readpartial).with(4096).and_raise(RuntimeError)
-        expect(@handler).to receive(:reconnecting).with(no_args)
-        expect_any_instance_of(XMPPSimple::Client).to receive(:reconnect).with(no_args)
+        expect(@handler).to receive(:disconnected).with(no_args)
         @client.run
       end
     end

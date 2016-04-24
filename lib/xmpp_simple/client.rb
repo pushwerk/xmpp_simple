@@ -3,18 +3,18 @@ module XMPPSimple
     include Celluloid::IO
     finalizer :finalize
 
-    def initialize(handler, username, password, host, port = 5223)
-      raise 'username, password, host and port must be set' if [username, password, host, port].include?(nil)
-      @username = Jid.new(username, host)
-      @password = password
-      @host = host
-      @port = port
-      @handler = handler
+    def initialize(params = {})
+      raise 'username, password, host and port must be set' unless [:username, :password, :host, :port].all? { |s| params.key?(s) && params[s] }
+      @username = Jid.new(params[:username], params[:host])
+      @password = params[:password]
+      @host = params[:host]
+      @port = params[:port]
+      @handler = params[:handler]
       @parser = nil
     end
 
     def connect
-      XMPPSimple.info "Connecting to #{@host}:#{@port}"
+      XMPPSimple.logger.info "Connecting to #{@host}:#{@port}"
       raw_socket = Celluloid::IO::TCPSocket.new(@host, @port)
       @socket = Celluloid::IO::SSLSocket.new(raw_socket).connect
       start
@@ -37,7 +37,7 @@ module XMPPSimple
     end
 
     def process(node)
-      XMPPSimple.debug "Process: #{node}"
+      XMPPSimple.logger.debug "Process: #{node}"
       return unless respond_to?(node.name)
       return unless %w(features success message iq).include?(node.name)
       send(node.name, node)
@@ -45,12 +45,12 @@ module XMPPSimple
 
     def write_data(xml)
       xml = xml.respond_to?(:to_xml) ? xml.to_xml : xml
-      XMPPSimple.debug "Sending: #{xml}"
+      XMPPSimple.logger.debug "Sending: #{xml}"
       @socket.write xml
     end
 
     def features(node)
-      XMPPSimple.debug "Features: #{node.class}"
+      XMPPSimple.logger.debug "Features: #{node.class}"
       if node.at('/features/bind:bind', 'bind' => 'urn:ietf:params:xml:ns:xmpp-bind')
         write_data Bind.create
       elsif node.at('/features/sasl:mechanisms', 'sasl' => 'urn:ietf:params:xml:ns:xmpp-sasl')
@@ -59,7 +59,7 @@ module XMPPSimple
         if mechanisms.any? { |m| m.inner_text == 'PLAIN' }
           write_data PlainAuth.create(@username, @password)
         else
-          XMPPSimple.info 'No authentication method provided'
+          XMPPSimple.logger.info 'No authentication method provided'
           disconnect
         end
       end
@@ -74,9 +74,9 @@ module XMPPSimple
     end
 
     def iq(node)
-      XMPPSimple.debug "Iq: #{node.inspect}"
+      XMPPSimple.logger.debug "Iq: #{node.inspect}"
       return unless node.at('/iq/bind:bind', 'bind' => 'urn:ietf:params:xml:ns:xmpp-bind')
-      XMPPSimple.debug 'Connected!'
+      XMPPSimple.logger.debug 'Connected!'
       @handler.connected if @handler.respond_to? :connected
     end
 
@@ -85,12 +85,11 @@ module XMPPSimple
         @parser << @socket.readpartial(4096)
       end
     rescue EOFError
-      XMPPSimple.debug 'Socket disconnected'
+      XMPPSimple.logger.debug 'Socket disconnected'
       @handler.disconnected if @handler.respond_to? :disconnected
     rescue => e
-      XMPPSimple.debug "Error: #{e} => Reconnecting"
-      @handler.reconnecting if @handler.respond_to? :reconnecting
-      reconnect
+      XMPPSimple.logger.debug "Error: #{e}"
+      @handler.disconnected if @handler.respond_to? :disconnected
     end
 
     def finalize

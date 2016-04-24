@@ -5,7 +5,7 @@ RSpec.describe XMPPSimple::Message do
 
   it 'returns valid xml' do
     @stanza = XMPPSimple::Message.create
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
     expect(@stanza.to_xml).to match('<message/>')
   end
 end

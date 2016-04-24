@@ -18,13 +18,13 @@ RSpec.describe XMPPSimple::Parser do
     end
 
     it 'detects syntax errors' do
-      expect(XMPPSimple).to receive(:error)
+      expect(XMPPSimple.logger).to receive(:error)
       expect { @parser << '<foo></bar>' }.not_to raise_exception
     end
 
     it 'recovers from syntax errors' do
       @parser << '<foo></bar>'
-      expect(XMPPSimple).not_to receive(:error)
+      expect(XMPPSimple.logger).not_to receive(:error)
       expect { @parser << '<oof></oof>' }.not_to raise_exception
     end
 
@@ -40,6 +40,7 @@ RSpec.describe XMPPSimple::Parser do
     end
 
     it 'gets called on element without namespace' do
+      # FIXME: breaks in jRuby, not sure why
       expect(@parser).to receive(:start_element_namespace).with('foobar', [], nil, nil, [])
       @parser << '<foobar>'
     end
@@ -69,6 +70,7 @@ RSpec.describe XMPPSimple::Parser do
     end
 
     it 'gets called on element without namespace' do
+      # FIXME: breaks in jRuby, not sure why
       expect(@parser).to receive(:end_element_namespace).with('foobar', nil, nil)
       @parser << '<foobar>'
       @parser << '</foobar>'

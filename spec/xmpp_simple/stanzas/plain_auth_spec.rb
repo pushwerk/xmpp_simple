@@ -8,9 +8,9 @@ RSpec.describe XMPPSimple::PlainAuth do
 
   it 'returns valid xml' do
     stub_const('XMPPSimple::PlainAuth::NAME', 'foobar')
-    xml = '<foobar xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">Zm9vQGJhcgBmb28AYmFy</foobar>'
+    expected = '<foobar xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="PLAIN">AGZvb0BiYXIAYmFy</foobar>'
     @stanza = XMPPSimple::PlainAuth.create(jid, 'bar')
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
-    expect(@stanza.to_xml).to match(xml)
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
+    expect(@stanza.to_xml).to be_equivalent_to(expected)
   end
 end

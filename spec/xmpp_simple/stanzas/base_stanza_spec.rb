@@ -7,7 +7,7 @@ RSpec.describe XMPPSimple::BaseStanza do
   it 'returns valid xml' do
     stub_const('XMPPSimple::BaseStanza::NAME', 'foobar')
     @stanza = XMPPSimple::BaseStanza.create
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
     expect(@stanza.to_xml).to match('<foobar/>')
   end
 end

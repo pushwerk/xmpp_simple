@@ -5,12 +5,8 @@ RSpec.describe XMPPSimple::Bind do
 
   it 'returns valid xml' do
     @stanza = XMPPSimple::Bind.create
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
-    expected = <<-EXPECTED
-<iq id="bind_1" type="set">
-  <bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/>
-</iq>
-EXPECTED
-    expect(@stanza.to_xml).to match(expected.chop)
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
+    expected = '<iq id="bind_1" type="set"><bind xmlns="urn:ietf:params:xml:ns:xmpp-bind"/></iq>'
+    expect(@stanza.to_xml).to be_equivalent_to(expected)
   end
 end

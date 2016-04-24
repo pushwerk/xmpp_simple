@@ -1,6 +1,7 @@
 module XMPPSimple
   class Node < Nokogiri::XML::Node
     def self.new(name = '', attrs = [], ns = [], doc = Nokogiri::XML::Document.new)
+      return if name.nil? || name.empty?
       node = super(name, doc)
       attrs.each { |a| node[a.localname] = a.value }
       ns.each { |p, u| node.add_namespace(p, u) }

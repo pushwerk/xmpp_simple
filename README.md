@@ -1,6 +1,7 @@
 # XmppSimple
 
-A simle xmpp parser gem with PLAIN auth
+A simle xmpp implementation using celluloid
+intended to work with https://github.com/l3akage/ccs
 
 ## Installation
 
@@ -17,11 +18,14 @@ And then execute:
 ```
 class XMPPConnection
   def initialize
-    @xmpp_client = XMPPSimple::Client.new(self,
-                                          username,
-                                          password,
-                                          host,
-                                          port).connect
+    xmpp_params = {
+      handler: self,
+      username: 'foobar',
+      password: 's3cr3t',
+      host: 'jabber.example.com',
+      port: 5222
+    }
+    @xmpp_client = XMPPSimple::Client.new(xmpp_params).connect
   end
 
   def send(xml)
@@ -40,15 +44,10 @@ class XMPPConnection
   def connected
     puts 'connected'
   end
-
-  def reconnecting
-    puts 'reconnecting'
-  end
 end
 ```
 
 ## TODO
-* Documentation?
 * Probably more tests
 
 ## Contributing

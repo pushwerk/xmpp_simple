@@ -16,37 +16,15 @@ require 'xmpp_simple/jid'
 require 'xmpp_simple/version'
 
 module XMPPSimple
-  attr_accessor :log
-
-  module_function :log, :log=
-
   module_function
 
-  @log = false
+  def logger=(value)
+    @logger = value
+  end
 
   def logger
-    @logger ||= Logger.new($stdout).tap do |logger|
-      logger.level = Logger::DEBUG
+    @logger ||= Logger.new($stdout).tap do |log|
+      log.level = Logger::ERROR
     end
-  end
-
-  def logger=(logger)
-    raise 'Logger needs to define: debug, info, error' unless logger.nil? ||
-                                                              (logger.respond_to?(:debug) &&
-                                                              logger.respond_to?(:info) &&
-                                                              logger.respond_to?(:error))
-    @logger = logger
-  end
-
-  def debug(message)
-    logger.debug(message.inspect) if @log
-  end
-
-  def info(message)
-    logger.info(message.inspect) if @log
-  end
-
-  def error(message)
-    logger.error(message.inspect) if @log
   end
 end

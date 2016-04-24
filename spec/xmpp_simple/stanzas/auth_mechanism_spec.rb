@@ -7,7 +7,8 @@ RSpec.describe XMPPSimple::AuthMechanism do
   it 'returns valid xml' do
     stub_const('XMPPSimple::AuthMechanism::MECHANISM', 'foobar')
     @stanza = XMPPSimple::AuthMechanism.create
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
-    expect(@stanza.to_xml).to match('<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="foobar"/>')
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
+    expected = '<auth xmlns="urn:ietf:params:xml:ns:xmpp-sasl" mechanism="foobar"/>'
+    expect(@stanza.to_xml).to be_equivalent_to(expected)
   end
 end

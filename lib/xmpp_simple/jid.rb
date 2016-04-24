@@ -3,7 +3,7 @@ module XMPPSimple
     attr_reader :username, :domain
 
     def initialize(username, host = nil)
-      if username.include?('@')
+      if username.to_s.include?('@')
         @username, @domain = username.split('@')
       else
         raise 'set either host or username@host' if host.nil?

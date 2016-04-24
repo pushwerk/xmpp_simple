@@ -1,9 +1,10 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'simplecov'
 
+require 'rspec/matchers'
+require 'equivalent-xml'
+
 require 'xmpp_simple'
-require 'ox'
-require 'helper/test_logger'
 require 'helper/test_client'
 require 'helper/test_handler'
 require 'helper/test_socket'

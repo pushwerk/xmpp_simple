@@ -4,7 +4,7 @@ module XMPPSimple
 
     def self.create(jid, password)
       super()
-      @node.content = ["#{jid}\x00#{jid.username}\x00#{password}"].pack('m').tr("\n", '')
+      @node.content = ["\x00#{jid}\x00#{password}"].pack('m').tr("\n", '')
       @node
     end
   end

@@ -5,7 +5,7 @@ RSpec.describe XMPPSimple::Iq do
 
   it 'returns valid xml' do
     @stanza = XMPPSimple::Iq.create
-    expect { Ox.parse(@stanza.to_xml) }.not_to raise_exception
+    expect { Nokogiri::XML(@stanza.to_xml) }.not_to raise_exception
     expect(@stanza.to_xml).to match('<iq id="bind_1" type="set"/>')
   end
 end
