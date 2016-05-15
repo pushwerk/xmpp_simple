@@ -4,13 +4,14 @@ module XMPPSimple
     finalizer :finalize
 
     def initialize(params = {})
-      raise 'username, password, host and port must be set' unless [:username, :password, :host, :port].all? { |s| params.key?(s) && params[s] }
+      unless [:username, :password, :host, :port].all? { |s| params.key?(s) && params[s] }
+        raise 'username, password, host and port must be set'
+      end
       @username = Jid.new(params[:username], params[:host])
       @password = params[:password]
       @host = params[:host]
       @port = params[:port]
       @handler = params[:handler]
-      @parser = nil
     end
 
     def connect
@@ -54,14 +55,18 @@ module XMPPSimple
       if node.at('/features/bind:bind', 'bind' => 'urn:ietf:params:xml:ns:xmpp-bind')
         write_data Bind.create
       elsif node.at('/features/sasl:mechanisms', 'sasl' => 'urn:ietf:params:xml:ns:xmpp-sasl')
-        mechanisms = node.xpath('/features/sasl:mechanisms/sasl:mechanism',
-                                'sasl' => 'urn:ietf:params:xml:ns:xmpp-sasl')
-        if mechanisms.any? { |m| m.inner_text == 'PLAIN' }
-          write_data PlainAuth.create(@username, @password)
-        else
-          XMPPSimple.logger.info 'No authentication method provided'
-          disconnect
-        end
+        authenticate(node)
+      end
+    end
+
+    def authenticate(node)
+      mechanisms = node.xpath('/features/sasl:mechanisms/sasl:mechanism',
+                              'sasl' => 'urn:ietf:params:xml:ns:xmpp-sasl')
+      if mechanisms.any? { |m| m.inner_text == 'PLAIN' }
+        write_data PlainAuth.create(@username, @password)
+      else
+        XMPPSimple.logger.info 'No authentication method provided'
+        disconnect
       end
     end
 
@@ -81,9 +86,7 @@ module XMPPSimple
     end
 
     def run
-      loop do
-        @parser << @socket.readpartial(4096)
-      end
+      loop { @parser << @socket.readpartial(4096) }
     rescue EOFError
       XMPPSimple.logger.debug 'Socket disconnected'
       @handler.disconnected if @handler.respond_to? :disconnected
