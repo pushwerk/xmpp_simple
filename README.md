@@ -7,7 +7,7 @@ intended to work with https://github.com/pushwerk/ccs
 
 Add this line to your application's Gemfile:
 
-    gem 'xmpp_simple', git: 'https://github.com/pushwerk/xmpp_simple.git'
+    gem 'xmpp_simple', '~> 0.1'
 
 And then execute:
 
